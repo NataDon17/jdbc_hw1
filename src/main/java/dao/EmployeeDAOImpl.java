@@ -1,3 +1,7 @@
+package dao;
+
+import pojo.Employee;
+
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.List;
@@ -36,19 +40,20 @@ public class EmployeeDAOImpl implements EmployeeDAO {
     }
 
     @Override
-    public void updateEmployee(Employee employee) {
+    public Employee updateEmployee(Employee employee) {
         EntityManager em = CreateEntityManager.getEntityManager();
         em.getTransaction().begin();
-        em.find(Employee.class, employee.getId());
-        employee.setFirstName(employee.getFirstName());
-        employee.setLastName(employee.getLastName());
-        employee.setGender(employee.getGender());
-        employee.setAge(employee.getAge());
-        employee.setCity(employee.getCity());
-        em.merge(employee);
+        Employee original = em.find(Employee.class, employee.getId());
+        original.setFirstName(employee.getFirstName());
+        original.setLastName(employee.getLastName());
+        original.setGender(employee.getGender());
+        original.setAge(employee.getAge());
+        original.setCity(employee.getCity());
+        em.merge(original);
         em.getTransaction().commit();
         em.close();
         System.out.println("Данные сотрудника с id=" + employee.getId() + " изменены.\n" + employee);
+        return original;
     }
 
     @Override
@@ -59,7 +64,6 @@ public class EmployeeDAOImpl implements EmployeeDAO {
         em.remove(employee1);
         em.getTransaction().commit();
         em.close();
-        CreateEntityManager.emf.close();
         System.out.println("Сотрудник с id=" + employee.getId() + " удален.");
     }
 }
