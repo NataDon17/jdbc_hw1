@@ -1,3 +1,7 @@
+package dao;
+
+import pojo.Employee;
+
 import java.util.List;
 
 public interface EmployeeDAO {
@@ -7,7 +11,7 @@ public interface EmployeeDAO {
 
     List<Employee> getAllEmployees();
 
-    void updateEmployee(int id, Employee employee);
+    Employee updateEmployee(Employee employee);
 
-    void deleteEmployee(int id);
+    void deleteEmployee(Employee employee);
 }

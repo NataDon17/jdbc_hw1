@@ -1,13 +1,37 @@
+package pojo;
+
+import javax.persistence.*;
+import java.util.Objects;
+
+@Entity
+@Table(name = "employee")
 public class Employee {
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Integer id;
+    @Column(name = "first_name")
     private String firstName;
+    @Column(name = "last_name")
     private String lastName;
+    @Column(name = "gender")
     private String gender;
+    @Column(name = "age")
     private int age;
+    @JoinColumn(name = "city_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private City city;
 
-    public Employee(int id, String firstName, String lastName, String gender, int age, City city) {
+    public Employee(Integer id, String firstName, String lastName, String gender, int age, City city) {
         this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.gender = gender;
+        this.age = age;
+        this.city = city;
+    }
+
+    public Employee(String firstName, String lastName, String gender, int age, City city) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.gender = gender;
@@ -18,11 +42,11 @@ public class Employee {
     public Employee() {
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -64,6 +88,19 @@ public class Employee {
 
     public void setCity(City city) {
         this.city = city;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Employee employee = (Employee) o;
+        return id.equals(employee.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     @Override

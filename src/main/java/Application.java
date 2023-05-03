@@ -1,53 +1,50 @@
+import dao.*;
+import pojo.City;
+import pojo.Employee;
+
 import java.sql.*;
 import java.util.List;
 
 public class Application {
     public static void main(String[] args) throws SQLException {
-        final String user = "postgres";
-        final String password = "357951";
-        final String url = "jdbc:postgresql://localhost:5432/postgres";
-        System.out.println("***** Задание 1 *****");
-        try (final Connection connection =
-                     DriverManager.getConnection(url, user, password);
-             PreparedStatement statement =
-                     connection.prepareStatement("SELECT * FROM employee WHERE id=32")) {
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                int idOfEmployee = resultSet.getInt("id");
-                System.out.println("ID сотрудника: " + idOfEmployee);
-                String fNameOfEmployee = resultSet.getString("first_name");
-                String lNameOfEmployee = resultSet.getString("last_name");
-                String genderOfEmployee = resultSet.getString("gender");
-                int cityOfEmployee = resultSet.getInt("city_id");
-                System.out.println("Имя: " + fNameOfEmployee);
-                System.out.println("Фамилия: " + lNameOfEmployee);
-                System.out.println("Пол: " + genderOfEmployee);
-                System.out.println("Город: " + cityOfEmployee);
-            }
-        } catch (SQLException e) {
-            System.out.println("Ошибка при подключении к базе данных!");
-            e.printStackTrace();
-        }
-
-        System.out.println("***** Задание 2 *****");
         EmployeeDAO employeeDAO = new EmployeeDAOImpl();
-        employeeDAO.createEmployee(new Employee(
-                1,
-                "Eva",
-                "Green",
+        CityDAO cityDAO = new CityDAOImpl();
+
+        City city1 = new City("Dallas", List.of());
+        City city2 = new City("Houston", List.of());
+        cityDAO.createCity(city1);
+        cityDAO.createCity(city2);
+        System.out.println(cityDAO.getAllCity().toString());
+        Employee employee1 = new Employee(
+                "Chris",
+                "Rea",
+                "male",
+                58,
+                city1);
+        Employee employee2 = new Employee(
+                "Lilly",
+                "Benet",
                 "female",
-                22,
-                new City(5, "Chicago")));
-        System.out.println(employeeDAO.getEmployeeById(33));
-        List<Employee> employeesList = employeeDAO.getAllEmployees();
-        System.out.println(employeesList.toString());
-        employeeDAO.updateEmployee(1, new Employee(
-                1,
-                "Eva",
-                "Red",
-                "female",
-                32,
-                new City(6, "Washington")));
-        employeeDAO.deleteEmployee(1);
+                30,
+                city1);
+        city1.setEmployeeList(List.of(employee1, employee2));
+        City updateCity1 = cityDAO.updateCity(city1);
+        System.out.println(updateCity1.getEmployeeList());
+
+        Employee employeeNew = employeeDAO.updateEmployee(new Employee(
+                employee2.getId(),
+                employee2.getFirstName(),
+                employee2.getLastName(),
+                employee2.getGender(),
+                employee2.getAge(),
+                city2
+        ));
+
+        city2.setEmployeeList(List.of(employeeNew));
+        System.out.println(city2.getEmployeeList());
+        System.out.println(cityDAO.getCityById(updateCity1.getCityId()).getCityName());
+        cityDAO.deleteCity(cityDAO.getCityById(53));
+
+        CreateEntityManager.emf.close();
     }
 }
